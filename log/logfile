@@ -1,0 +1,7 @@
+In this folder, log files will be saved.
+log file is csv file.
+first line shows the date and time to create this log file.
+In a line, norad id, object name, country, message epoch, decay epoch
+rcs (size of object), source, and message type are shown in this order.
+if "+" added at the beginning of the line, the information is new compared to 
+previous output.

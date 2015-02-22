@@ -35,7 +35,6 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URL;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,6 +96,8 @@ public class SpaceTrackWorker {
 			worker.outputDecayData(decayEpochList);
 			worker.saveDecayData(decayEpochList);
 
+		} catch (IOException e) {
+			System.err.println("please check ini file.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,11 +107,9 @@ public class SpaceTrackWorker {
 	 * Get Decay data from Space Track website
 	 * 
 	 * @return
-	 * @throws IOException
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public ArrayList<DecayEpoch> getDecayEpochList() throws IOException,
-			SQLException {
+	public ArrayList<DecayEpoch> getDecayEpochList() throws Exception {
 		ArrayList<DecayEpoch> result = null;
 
 		loadPropertiesFiles();
@@ -135,6 +134,10 @@ public class SpaceTrackWorker {
 		} catch (ParserConfigurationException | SAXException e) {
 			System.err.println(e);
 			e.printStackTrace();
+			throw e;
+		} catch (IOException e) {
+			System.err.println("id and password might be wrong.");
+			throw e;
 		}
 
 		httpsConnection.disconnect();
@@ -169,9 +172,9 @@ public class SpaceTrackWorker {
 				(httpsConnection.getInputStream())));
 
 		String output;
-		System.out.println("Output from Server .... \n");
+		// System.out.println("Output from Server .... \n");
 		while ((output = br.readLine()) != null) {
-			System.out.println(output);
+			System.out.println("authrization: " + output);
 		}
 	}
 
@@ -235,23 +238,26 @@ public class SpaceTrackWorker {
 	private void outputDecayData(ArrayList<DecayEpoch> decayEpochList)
 			throws IOException {
 		String result = "";
-		// hour
-		if (this.last != null) {
-			double diff = ((this.current.getTimeInMillis() - this.last
-					.getTimeInMillis()) / 1000.0 / 3600.0);
-			result += "It took " + diff + " hours from the previous output"
-					+ BR;
-		} else {
-			result += "This is first output since last initialization." + BR;
-		}
-		for (int i = 0; i < this.showLine; i++) {
-			if (!checkExist(decayEpochList.get(i))) {
-				result += "+";
+		if (decayEpochList != null) {
+			if (this.last != null) {
+				double diff = ((this.current.getTimeInMillis() - this.last
+						.getTimeInMillis()) / 1000.0 / 3600.0);
+				result += "It took " + diff + " hours from the previous output"
+						+ BR;
+			} else {
+				result += "This is first output since last initialization."
+						+ BR;
 			}
-			result += decayEpochList.get(i).getCSVLine() + BR;
+			for (int i = 0; i < this.showLine; i++) {
+				if (!checkExist(decayEpochList.get(i))) {
+					result += "+";
+				}
+				result += decayEpochList.get(i).getCSVLine() + BR;
+			}
+			System.out.print(result);
+		} else {
+			System.out.println("here");
 		}
-		System.out.print(result);
-
 	}
 
 	private boolean checkExist(DecayEpoch decayEpoch) {

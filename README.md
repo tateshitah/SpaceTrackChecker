@@ -12,10 +12,10 @@
 
  - INI file
 
-  + counrty: You can set country such as “JPN” and “US”. If this parameter is not set, all countries can be shown.
-  + NORAD_CAT_ID: You can select one your favorite vehicle by using NORAD CAT ID. If this parameter is not set, all satellites can be shown.
-  + showLine: You can set the limit line number of search result. If this parameter is not set, 10 will be set as default.
+  1. counrty: You can set country such as “JPN” and “US”. If this parameter is not set, all countries can be shown.
+  2. NORAD_CAT_ID: You can select one your favorite vehicle by using NORAD CAT ID. If this parameter is not set, all satellites can be shown.
+  3. showLine: You can set the limit line number of search result. If this parameter is not set, 10 will be set as default.
 
  - Windows
 
- You can use bat file. You can also use task scheduler on windows OS. 
+  You can use bat file. You can also use task scheduler on windows OS. 

@@ -54,50 +54,94 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
+ * Main class of Space Track Checker application.
  * 
  * @author Hiroaki Tateshita
- * @version 0.1.0
+ * @version 0.3.0
  * 
  */
 public class SpaceTrackWorker {
 
+	/**
+	 * the url of space track
+	 */
 	final private static String baseURL = "https://www.space-track.org";
-	final private static String authPath = "/auth/login";
-	final private static String BR = System.getProperty("line.separator");
-	private Calendar current;
-	private Calendar last;
-	private final SimpleDateFormat sdf;
-	private int showLine;
-
-	SpaceTrackWorker() {
-		this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
-		this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		this.showLine = 10;
-	}
 
 	/**
-	 * 
+	 * the path string at authorization.
+	 */
+	final private static String authPath = "/auth/login";
+
+	/**
+	 * line break to avoid dependency of OS, linux and windows.
+	 */
+	final private static String BR = System.getProperty("line.separator");
+
+	/**
+	 * current time to execute this application
+	 */
+	private Calendar current;
+
+	/**
+	 * last time to execute this application
+	 */
+	private Calendar last;
+
+	/**
+	 * member object to transfer between string and calendar object. it is based
+	 * on UTC.
+	 */
+	private final SimpleDateFormat sdf;
+
+	/**
+	 * the line number to show the results of searching decay information from
+	 * space track. Usually it will be set by ini file. if there is no value in
+	 * the ini file, "10" will be set.
+	 */
+	private int showLine;
+
+	/**
+	 * properties object from space_track.ini
 	 */
 	private Properties spaceTrackProperties;
 
 	/**
-	 * 
+	 * http connection to connect space track website
 	 */
 	private HttpsURLConnection httpsConnection;
+
+	/**
+	 * the latest log file name.
+	 */
 	private String lastlogFileName;
+
+	/**
+	 * ArrayList of DecayEpoch objects from the latest log file
+	 */
 	private ArrayList<DecayEpoch> lastEpochArray;
+
+	SpaceTrackWorker() {
+		this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
+		this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
 	public static void main(String[] args) {
 		try {
 			SpaceTrackWorker worker = new SpaceTrackWorker();
+
+			// get current time.
 			worker.current = Calendar.getInstance();
+
 			ArrayList<DecayEpoch> decayEpochList = worker.getDecayEpochList();
 
 			worker.outputDecayData(decayEpochList);
+
 			worker.saveDecayData(decayEpochList);
 
 		} catch (IOException e) {
 			System.err.println("please check ini file.");
+		} catch (SpaceTrackNoResultException e) {
+			System.err.println(e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -125,6 +169,8 @@ public class SpaceTrackWorker {
 		String query = createQueryForSpaceTrack();
 
 		URL url = new URL(baseURL + query);
+
+		// for processing xml file.
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		try {
@@ -146,7 +192,8 @@ public class SpaceTrackWorker {
 	}
 
 	/**
-	 * Authentication. in this method, https connection will be created.
+	 * Authentication for space track web service. In this method, https
+	 * connection will be created.
 	 * 
 	 * @throws IOException
 	 */
@@ -179,65 +226,85 @@ public class SpaceTrackWorker {
 	}
 
 	/**
+	 * create delay epoch array list from xml response from web service of space
+	 * track.
 	 * 
 	 * @param doc
-	 * @return
+	 *            xml object acquired from space track web service
+	 * @return delay epoch array list
+	 * @throws SpaceTrackNoResultException
 	 */
-	private ArrayList<DecayEpoch> createDecayEpochArray(Document doc) {
+	private ArrayList<DecayEpoch> createDecayEpochArray(Document doc)
+			throws SpaceTrackNoResultException {
 		NodeList decayEpochNodeList = doc.getElementsByTagName("item");
 		NodeList membersOfItem;
 		ArrayList<DecayEpoch> result = new ArrayList<DecayEpoch>();
-		for (int i = 0; i < decayEpochNodeList.getLength(); i++) {
-			// System.out.println(i + ": "
-			// + decayEpochNodeList.item(i).getNodeName());
-			DecayEpoch decayEpoch = new DecayEpoch();
-			membersOfItem = decayEpochNodeList.item(i).getChildNodes();
-			Node tempNode;
+		if (decayEpochNodeList.getLength() > 0) {
+			for (int i = 0; i < decayEpochNodeList.getLength(); i++) {
+				// System.out.println(i + ": "
+				// + decayEpochNodeList.item(i).getNodeName());
+				DecayEpoch decayEpoch = new DecayEpoch();
+				membersOfItem = decayEpochNodeList.item(i).getChildNodes();
+				Node tempNode;
 
-			for (int j = 0; j < membersOfItem.getLength(); j++) {
-				if (membersOfItem.item(j).getNodeName().equals("NORAD_CAT_ID")) {
-					decayEpoch.setNorad_cat_id(membersOfItem.item(j)
-							.getFirstChild().getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("OBJECT_NAME")) {
-					decayEpoch.setObject_name(membersOfItem.item(j)
-							.getFirstChild().getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("RCS_SIZE")) {
-					tempNode = membersOfItem.item(j).getFirstChild();
-					if (tempNode != null) {
-						decayEpoch.setRcs_size(tempNode.getNodeValue());
+				for (int j = 0; j < membersOfItem.getLength(); j++) {
+					if (membersOfItem.item(j).getNodeName()
+							.equals("NORAD_CAT_ID")) {
+						decayEpoch.setNorad_cat_id(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("OBJECT_NAME")) {
+						decayEpoch.setObject_name(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("RCS_SIZE")) {
+						tempNode = membersOfItem.item(j).getFirstChild();
+						if (tempNode != null) {
+							decayEpoch.setRcs_size(tempNode.getNodeValue());
+						}
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("COUNTRY")) {
+						decayEpoch.setCountry(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("MSG_EPOCH")) {
+						decayEpoch.setMsg_epoch(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("DECAY_EPOCH")) {
+						decayEpoch.setDecay_epoch(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("SOURCE")) {
+						decayEpoch.setSource(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("MSG_TYPE")) {
+						decayEpoch.setMsg_type(membersOfItem.item(j)
+								.getFirstChild().getNodeValue());
 					}
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("COUNTRY")) {
-					decayEpoch.setCountry(membersOfItem.item(j).getFirstChild()
-							.getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("MSG_EPOCH")) {
-					decayEpoch.setMsg_epoch(membersOfItem.item(j)
-							.getFirstChild().getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("DECAY_EPOCH")) {
-					decayEpoch.setDecay_epoch(membersOfItem.item(j)
-							.getFirstChild().getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName().equals("SOURCE")) {
-					decayEpoch.setSource(membersOfItem.item(j).getFirstChild()
-							.getNodeValue());
-				} else if (membersOfItem.item(j).getNodeName()
-						.equals("MSG_TYPE")) {
-					decayEpoch.setMsg_type(membersOfItem.item(j)
-							.getFirstChild().getNodeValue());
-				}
 
+				}
+				result.add(decayEpoch);
 			}
-			result.add(decayEpoch);
+		} else {
+			throw new SpaceTrackNoResultException(
+					"The search result was 0. please check the ini file.");
 		}
+
 		return result;
 	}
 
-	private void outputDecayData(ArrayList<DecayEpoch> decayEpochList)
-			throws IOException {
+	/**
+	 * show the results on the standard output.
+	 * 
+	 * @param decayEpochList
+	 */
+	private void outputDecayData(ArrayList<DecayEpoch> decayEpochList) {
 		String result = "";
+		if (this.showLine > decayEpochList.size()) {
+			this.showLine = decayEpochList.size();
+		}
 		if (decayEpochList != null) {
 			if (this.last != null) {
 				double diff = ((this.current.getTimeInMillis() - this.last
@@ -255,11 +322,16 @@ public class SpaceTrackWorker {
 				result += decayEpochList.get(i).getCSVLine() + BR;
 			}
 			System.out.print(result);
-		} else {
-			System.out.println("here");
 		}
 	}
 
+	/**
+	 * check whether the DecayEpoch object is included in the last results of
+	 * DecayEpoch.
+	 * 
+	 * @param decayEpoch
+	 * @return
+	 */
 	private boolean checkExist(DecayEpoch decayEpoch) {
 		boolean result = false;
 		if (this.lastEpochArray != null) {
@@ -274,25 +346,28 @@ public class SpaceTrackWorker {
 	}
 
 	/**
+	 * load properties file, space_track.ini
 	 * 
 	 * @throws IOException
+	 *             file i/o might have problem.
+	 * @throws ParseException
+	 *             log file might be broken.
 	 */
-	private void loadPropertiesFiles() throws IOException {
+	private void loadPropertiesFiles() throws IOException, ParseException {
+		FileReader lastlogFileReader = null;
+		BufferedReader reader = null;
 		if (spaceTrackProperties == null) {
 			spaceTrackProperties = new Properties();
 			try {
 				spaceTrackProperties.load(new FileInputStream(
 						"conf/space_track.ini"));
-
-				FileReader lastlogFileReader;
 				try {
 					this.lastlogFileName = spaceTrackProperties
 							.getProperty("lastlog");
 					File lastlogFile = new File(lastlogFileName);
 					if (lastlogFile.exists()) {
 						lastlogFileReader = new FileReader(lastlogFileName);
-						BufferedReader reader = new BufferedReader(
-								lastlogFileReader);
+						reader = new BufferedReader(lastlogFileReader);
 						this.last = Calendar.getInstance();
 						this.last.setTime(sdf.parse(reader.readLine()));
 						String tempStr;
@@ -310,31 +385,42 @@ public class SpaceTrackWorker {
 							epoch.setSource(tempStrArray[6]);
 							epoch.setMsg_type(tempStrArray[7]);
 							this.lastEpochArray.add(epoch);
-
 						}
-						reader.close();
 					} else {
 						this.last = null;
 					}
-					this.showLine = Integer.parseInt(spaceTrackProperties
-							.getProperty("showLine"));
+					String showLineStr = spaceTrackProperties
+							.getProperty("showLine");
+					if (showLineStr.equals("")) {
+						this.showLine = 10;// default
+					} else {
+						this.showLine = Integer.parseInt(showLineStr);
+					}
 				} catch (ParseException e) {
-					e.printStackTrace();
+					throw new ParseException(
+							"log file might have problem. delete the latest log file in the log folder."
+									+ e.getMessage(), e.getErrorOffset());
 				}
-				// dbProperties
-				// .load(new FileInputStream("WEB-INF/conf/db.ini"));
-				// }
 			} catch (IOException e) {
 				throw new IOException("during loading ini file: "
 						+ e.getMessage());
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
+				if (lastlogFileReader != null) {
+					lastlogFileReader.close();
+				}
 			}
 		}
 	}
 
 	/**
+	 * save log file by using search result.
 	 * 
 	 * @param decayEpochList
 	 * @throws IOException
+	 *             file i/o problem to write log file.
 	 */
 	private void saveDecayData(ArrayList<DecayEpoch> decayEpochList)
 			throws IOException {
@@ -361,21 +447,41 @@ public class SpaceTrackWorker {
 			}
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw e;
 		}
 	}
 
 	/**
-	 * create query for space track.
+	 * create query for space track web service.
 	 * 
-	 * @return
+	 * @return query by using information from ini file.
 	 */
 	private String createQueryForSpaceTrack() {
 		String query;
-
-		query = "/basicspacedata/query/class/decay/COUNTRY/JPN/MSG_TYPE/Prediction/orderby/MSG_EPOCH%20desc/format/xml/metadata/false";
+		String country = "";
+		String limit = "";
+		String noradCatId = "";
+		if (spaceTrackProperties != null) {
+			country = spaceTrackProperties.getProperty("country");
+			limit = spaceTrackProperties.getProperty("showLine");
+			noradCatId = spaceTrackProperties.getProperty("NORAD_CAT_ID");
+		}
+		query = "/basicspacedata/query/class/decay/";
+		if (!noradCatId.equals("")) {
+			query += "NORAD_CAT_ID/";
+			query += noradCatId + "/";
+		}
+		if (!country.equals("")) {
+			query += "COUNTRY/";
+			query += country + "/";
+		}
+		query += "MSG_TYPE/Prediction/orderby/MSG_EPOCH%20desc/";
+		if (!limit.equals("")) {
+			query += "limit/";
+			query += limit + "/";
+		}
+		query += "format/xml/metadata/false";
 		return query;
+		// https://www.space-track.org/basicspacedata/query/class/decay/MSG_TYPE/prediction/orderby/MSG_EPOCH%20desc/limit/10/format/xml/metadata/false
 	}
-
 }

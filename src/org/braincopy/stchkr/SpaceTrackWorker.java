@@ -467,16 +467,16 @@ public class SpaceTrackWorker {
 			noradCatId = spaceTrackProperties.getProperty("NORAD_CAT_ID");
 		}
 		query = "/basicspacedata/query/class/decay/";
-		if (!noradCatId.equals("")) {
+		if (noradCatId != null && !noradCatId.equals("")) {
 			query += "NORAD_CAT_ID/";
 			query += noradCatId + "/";
 		}
-		if (!country.equals("")) {
+		if (country != null && !country.equals("")) {
 			query += "COUNTRY/";
 			query += country + "/";
 		}
 		query += "MSG_TYPE/Prediction/orderby/MSG_EPOCH%20desc/";
-		if (!limit.equals("")) {
+		if (limit != null && !limit.equals("")) {
 			query += "limit/";
 			query += limit + "/";
 		}

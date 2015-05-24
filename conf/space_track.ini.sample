@@ -1,7 +1,23 @@
 #Sun Feb 22 10:59:45 JST 2015
+
+!required
 user=
+
+!required
 password=
+
+!automatically filled
 lastlog=
+
+!option
 showLine=10
+
+!option
 country=JPN
+
+!option
 NORAD_CAT_ID=
+
+!option
+RCS_SIZE=LARGE
+

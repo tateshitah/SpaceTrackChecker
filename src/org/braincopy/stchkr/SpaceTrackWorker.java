@@ -130,7 +130,7 @@ public class SpaceTrackWorker {
 			SpaceTrackWorker worker = new SpaceTrackWorker();
 
 			// get current time.
-			worker.current = Calendar.getInstance();
+			worker.current = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
 			ArrayList<DecayEpoch> decayEpochList = worker.getDecayEpochList();
 
@@ -305,6 +305,10 @@ public class SpaceTrackWorker {
 		if (this.showLine > decayEpochList.size()) {
 			this.showLine = decayEpochList.size();
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		sdf.setTimeZone(this.current.getTimeZone());
+		result += sdf.format(this.current.getTime()) + "("
+				+ sdf.getTimeZone().getID() + ") ";
 		if (decayEpochList != null) {
 			if (this.last != null) {
 				double diff = ((this.current.getTimeInMillis() - this.last
@@ -460,11 +464,13 @@ public class SpaceTrackWorker {
 		String query;
 		String country = "";
 		String limit = "";
+		String rcs_size = "";
 		String noradCatId = "";
 		if (spaceTrackProperties != null) {
 			country = spaceTrackProperties.getProperty("country");
 			limit = spaceTrackProperties.getProperty("showLine");
 			noradCatId = spaceTrackProperties.getProperty("NORAD_CAT_ID");
+			rcs_size = spaceTrackProperties.getProperty("RCS_SIZE");
 		}
 		query = "/basicspacedata/query/class/decay/";
 		if (noradCatId != null && !noradCatId.equals("")) {
@@ -474,6 +480,10 @@ public class SpaceTrackWorker {
 		if (country != null && !country.equals("")) {
 			query += "COUNTRY/";
 			query += country + "/";
+		}
+		if (rcs_size != null && !rcs_size.equals("")) {
+			query += "RCS_SIZE/";
+			query += rcs_size + "/";
 		}
 		query += "MSG_TYPE/Prediction/orderby/MSG_EPOCH%20desc/";
 		if (limit != null && !limit.equals("")) {

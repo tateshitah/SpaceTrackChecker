@@ -120,6 +120,8 @@ public class SpaceTrackWorker {
 	 */
 	private ArrayList<DecayEpoch> lastEpochArray;
 
+	private int limit;
+
 	SpaceTrackWorker() {
 		this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
 		this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -285,13 +287,37 @@ public class SpaceTrackWorker {
 					}
 
 				}
-				result.add(decayEpoch);
+				if (!checkIncludeSameNoradCatID(result, decayEpoch)) {
+					result.add(decayEpoch);
+				}
 			}
 		} else {
 			throw new SpaceTrackNoResultException(
 					"The search result was 0. please check the ini file.");
 		}
 
+		return result;
+	}
+
+	/**
+	 * check if decayEpochList include the decayEpoch or not.
+	 * 
+	 * @param decayEpochList
+	 *            this list should be sorted by msg epoch
+	 * @param decayEpoch
+	 * @return decayEpochList include the decayEpoch or not. if include, return
+	 *         true, if not return false.
+	 */
+	private boolean checkIncludeSameNoradCatID(
+			ArrayList<DecayEpoch> decayEpochList, DecayEpoch decayEpoch) {
+		boolean result = false;
+		for (int i = 0; i < decayEpochList.size(); i++) {
+			if (decayEpochList.get(i).getNorad_cat_id()
+					.equals(decayEpoch.getNorad_cat_id())) {
+				result = true;
+				break;
+			}
+		}
 		return result;
 	}
 
@@ -468,7 +494,7 @@ public class SpaceTrackWorker {
 		String noradCatId = "";
 		if (spaceTrackProperties != null) {
 			country = spaceTrackProperties.getProperty("country");
-			limit = spaceTrackProperties.getProperty("showLine");
+			limit = spaceTrackProperties.getProperty("limit");
 			noradCatId = spaceTrackProperties.getProperty("NORAD_CAT_ID");
 			rcs_size = spaceTrackProperties.getProperty("RCS_SIZE");
 		}

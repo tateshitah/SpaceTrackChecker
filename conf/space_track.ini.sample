@@ -9,8 +9,11 @@ password=
 !automatically filled
 lastlog=
 
-!option
+!option. the number of line to show in the standard output.
 showLine=10
+
+!required. the number of the line of search result 
+limit=100
 
 !option
 country=JPN

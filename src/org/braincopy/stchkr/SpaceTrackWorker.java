@@ -80,7 +80,7 @@ public class SpaceTrackWorker {
 	/**
 	 * current time to execute this application
 	 */
-	private Calendar current;
+	private final Calendar current;
 
 	/**
 	 * last time to execute this application
@@ -120,19 +120,18 @@ public class SpaceTrackWorker {
 	 */
 	private ArrayList<DecayEpoch> lastEpochArray;
 
-	private int limit;
+	// private int limit;
 
 	SpaceTrackWorker() {
 		this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
 		this.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		// get current time.
+		this.current = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	}
 
 	public static void main(String[] args) {
 		try {
 			SpaceTrackWorker worker = new SpaceTrackWorker();
-
-			// get current time.
-			worker.current = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
 			ArrayList<DecayEpoch> decayEpochList = worker.getDecayEpochList();
 
@@ -519,5 +518,10 @@ public class SpaceTrackWorker {
 		query += "format/xml/metadata/false";
 		return query;
 		// https://www.space-track.org/basicspacedata/query/class/decay/MSG_TYPE/prediction/orderby/MSG_EPOCH%20desc/limit/10/format/xml/metadata/false
+	}
+
+	public ArrayList<TIP> getTIPList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

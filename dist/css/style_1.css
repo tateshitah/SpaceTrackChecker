@@ -1,0 +1,62 @@
+table {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	border-left: 1px solid #ccc;
+	border-top: 1px solid #ccc; 
+	color: #333;
+}
+
+
+th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+ 
+th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+.bordered tr:hover
+{
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+.highlight
+{
+  background: #fbf8e9;
+  -o-transition: all 0.1s ease-in-out;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -ms-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+
+table thead tr th {
+	text-transform: uppercase;
+	background: #e2e2e2;
+}
+
+table td, table th {
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+	line-height: 1.8em;
+	font-size: 0.8em;
+	vertical-align: top;
+	width: 20%;
+}
+
+table tr.odd th, table tr.odd td {
+	background: #efefef;
+}
+
+
+

@@ -65,7 +65,8 @@ public class SpaceTrackViewer {
 		if (htmlfile.exists()) {
 
 			Desktop desktop = Desktop.getDesktop();
-			String uriString = "file://" + htmlfile.getAbsolutePath();
+			String uriString = "file://"
+					+ htmlfile.getAbsolutePath().replace('¥', '/');
 			try {
 				URI uri = new URI(uriString);
 				desktop.browse(uri);
@@ -87,6 +88,9 @@ public class SpaceTrackViewer {
 		} catch (UnsupportedEncodingException e) {
 			throw e;
 		}
+		writer.print("<!DOCTYPE html><html><header>"
+				+ "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
+				+ "</header><body>");
 		writer.close();
 
 	}

@@ -66,7 +66,7 @@ public class SpaceTrackViewer {
 
 			Desktop desktop = Desktop.getDesktop();
 			String uriString = "file://"
-					+ htmlfile.getAbsolutePath().replace('¥', '/');
+					+ htmlfile.getAbsolutePath().replace('\\', '/');
 			try {
 				URI uri = new URI(uriString);
 				desktop.browse(uri);

@@ -5,3 +5,5 @@ hs_err_pid*
 *.ini
 *.log
 .settings/
+dist/tipMap.html
+dist/decaylist.html

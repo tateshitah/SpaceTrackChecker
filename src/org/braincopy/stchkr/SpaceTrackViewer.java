@@ -42,6 +42,7 @@ import java.util.ArrayList;
  * Train - Drive By
  * 
  * @author Hiroaki Tateshita
+ * @version 0.4.0
  *
  */
 public class SpaceTrackViewer {
@@ -56,9 +57,10 @@ public class SpaceTrackViewer {
 		viewer.setWorker(new SpaceTrackWorker());
 
 		try {
-			ArrayList<DecayEpoch> decayEpochList = viewer.getWorker()
+			ArrayList<SpaceTrackObject> decayEpochList = viewer.getWorker()
 					.getDecayEpochList();
-			ArrayList<TIP> tipList = viewer.getWorker().getTIPList();
+			ArrayList<SpaceTrackObject> tipList = viewer.getWorker()
+					.getTIPList();
 			viewer.createHTML(decayEpochList);
 			viewer.createHTML2(tipList);
 		} catch (Exception e1) {
@@ -66,13 +68,18 @@ public class SpaceTrackViewer {
 			e1.printStackTrace();
 		}
 		File htmlfile = new File("dist/decaylist.html");
-		if (htmlfile.exists()) {
+		File htmlfile2 = new File("dist/tipMap.html");
+		if (htmlfile.exists() && htmlfile2.exists()) {
 
 			Desktop desktop = Desktop.getDesktop();
 			String uriString = "file://"
 					+ htmlfile.getAbsolutePath().replace('\\', '/');
+			String uriString2 = "file://"
+					+ htmlfile2.getAbsolutePath().replace('\\', '/');
 			try {
 				URI uri = new URI(uriString);
+				desktop.browse(uri);
+				uri = new URI(uriString2);
 				desktop.browse(uri);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -86,7 +93,13 @@ public class SpaceTrackViewer {
 		return this.worker;
 	}
 
-	private void createHTML2(ArrayList<TIP> tipList)
+	/**
+	 * 
+	 * @param tipList
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
+	private void createHTML2(ArrayList<SpaceTrackObject> tipList)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = null;
 		try {
@@ -100,15 +113,28 @@ public class SpaceTrackViewer {
 				// +
 				// "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
 				+ "<script type='text/javascript' src='http://www.openlayers.org/api/OpenLayers.js'></script>"
-				+ "<script type='text/javascript' src='js/openLayersImple.js'></script>"
-				+ "</header><body onload='init();'>");
+				+ "<script type='text/javascript' src='js/openLayersImple.js'>"
+				+ "</script>" + "</header><body onload='init();");
+		TIP tip = null;
+		for (int i = 0; i < tipList.size(); i++) {
+			tip = (TIP) tipList.get(i);
+			writer.print("showMarker(" + tip.getLon() + "," + tip.getLat()
+					+ ");");
+		}
+		writer.print("'>");
 		writer.print("<div id='canvas' style='width:800px; height:600px'></div>");
 		writer.print("</body></html>");
 		writer.close();
 
 	}
 
-	private void createHTML(ArrayList<DecayEpoch> decayEpochList)
+	/**
+	 * 
+	 * @param decayEpochList
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
+	private void createHTML(ArrayList<SpaceTrackObject> decayEpochList)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = null;
 		try {
@@ -132,14 +158,15 @@ public class SpaceTrackViewer {
 				+ ") "
 				+ "</caption><thead><tr><th>Cat ID</th><th>Name</th>"
 				+ "<th>Country</th><th>MSG_EPOCH</th><th>DECAY_EPOCH</th><th>SOURCE</th></tr></thead><tbody>");
+		DecayEpoch decayEpoch = null;
 		for (int i = 0; i < decayEpochList.size(); i++) {
-			writer.print("<tr><td>" + decayEpochList.get(i).getNorad_cat_id()
-					+ "</td><th>" + decayEpochList.get(i).getObject_name()
-					+ "</th><td>" + decayEpochList.get(i).getCountry()
-					+ "</td><td>" + decayEpochList.get(i).getMsg_epoch()
-					+ "</td><td>" + decayEpochList.get(i).getDecay_epoch()
-					+ "</td><td>" + decayEpochList.get(i).getSource()
-					+ "</td></tr>");
+			decayEpoch = (DecayEpoch) decayEpochList.get(i);
+			writer.print("<tr><td>" + decayEpoch.getNorad_cat_id()
+					+ "</td><th>" + decayEpoch.getObject_name() + "</th><td>"
+					+ decayEpoch.getCountry() + "</td><td>"
+					+ decayEpoch.getMsg_epoch() + "</td><td>"
+					+ decayEpoch.getDecay_epoch() + "</td><td>"
+					+ decayEpoch.getSource() + "</td></tr>");
 		}
 		writer.print("</tbody></table></body></html>");
 		writer.close();

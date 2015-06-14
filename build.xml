@@ -9,7 +9,7 @@
 	<target name="create_run_jar">
 		<jar destfile="stchkr.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
-				<attribute name="Main-Class" value="org.braincopy.stchkr.SpaceTrackWorker" />
+				<attribute name="Main-Class" value="org.braincopy.stchkr.SpaceTrackViewer" />
 				<attribute name="Class-Path" value="." />
 			</manifest>
 			<fileset dir="bin" />

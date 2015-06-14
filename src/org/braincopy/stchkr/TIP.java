@@ -22,6 +22,26 @@ THE SOFTWARE.
 
 package org.braincopy.stchkr;
 
-public class TIP {
+public class TIP extends SpaceTrackObject {
+
+	private String lat;
+	private String lon;
+
+	public void setLat(String lat_) {
+		this.lat = lat_;
+	}
+
+	public void setLon(String lon_) {
+		this.lon = lon_;
+
+	}
+
+	public String getLat() {
+		return this.lat;
+	}
+
+	public String getLon() {
+		return this.lon;
+	}
 
 }

@@ -1,33 +1,35 @@
- function init() {
-  				var options = {
-					minResolution: "auto",
-					minExtent: new OpenLayers.Bounds(-1, -1, 1, 1),
-					maxResolution: "auto",
-					maxExtent: new OpenLayers.Bounds(-180, -90, 180, 90),
-				};
-				      var map = new OpenLayers.Map("canvas",options);
+var map;
+var markers;
+
+function init() {
+	map = new OpenLayers.Map("canvas");
+	var mapnik = new OpenLayers.Layer.OSM();
+    var layerCycleMap = new OpenLayers.Layer.OSM("OpenCycleMap");
+	var fromProjection = new OpenLayers.Projection("EPSG:4326"); // Transform
+																	// from WGS
+																	// 1984
+	var toProjection = new OpenLayers.Projection("EPSG:900913"); // to
+																	// Spherical
+																	// Mercator
+																	// Projection
+	var position = new OpenLayers.LonLat(139.76, 0).transform(
+			fromProjection, toProjection);
+	var zoom = 2
+	 var jpl_wms = new OpenLayers.Layer.WMS( "NASA Global Mosaic",
+             "http://wms.jpl.nasa.gov/wms.cgi", 
+             {layers: "modis,global_mosaic"});
+	map.addLayer(mapnik);
+	map.setCenter(position, zoom);
+
+	markers = new OpenLayers.Layer.Markers("Markers");
+	map.addLayer(markers);
 
 
-         var mapnik = new OpenLayers.Layer.OSM();
-        map.addLayer(mapnik);
- 			map.zoomToMaxExtent();
- 			var markers = new OpenLayers.Layer.Markers("Markers");
-map.addLayer(markers);
-var marker = new OpenLayers.Marker(
-    new OpenLayers.LonLat(139.76, 35.68)
-        .transform(
-            new OpenLayers.Projection("EPSG:4326"), 
-            new OpenLayers.Projection("EPSG:900913")
-        )
-);
-markers.addMarker(marker);
- /*        
-        var lonLat = new OpenLayers.LonLat(139.76, 35.68)
-            .transform(
-                new OpenLayers.Projection("EPSG:4326"), 
-                new OpenLayers.Projection("EPSG:900913")
-            );
-        map.setCenter(lonLat, 2);
-   */ }
-    
-    
+}
+
+function showMarker(lon, lat) {
+	var marker = new OpenLayers.Marker(new OpenLayers.LonLat(lon, lat)
+			.transform(new OpenLayers.Projection("EPSG:4326"),
+					new OpenLayers.Projection("EPSG:900913")));
+	markers.addMarker(marker);
+}

@@ -28,22 +28,12 @@ package org.braincopy.stchkr;
  * @version 0.3.0
  * 
  */
-public class DecayEpoch {
-	private String norad_cat_id;
+public class DecayEpoch extends SpaceTrackObject {
 	private String object_name;
 	private String rcs_size;
 	private String country;
-	private String msg_epoch;
 	private String msg_type;
 	private String source;
-	private String decay_epoch;
-
-	/**
-	 * @return the norad_cat_id
-	 */
-	public String getNorad_cat_id() {
-		return norad_cat_id;
-	}
 
 	/**
 	 * @return the object_name
@@ -67,13 +57,6 @@ public class DecayEpoch {
 	}
 
 	/**
-	 * @return the msg_epoch
-	 */
-	public String getMsg_epoch() {
-		return msg_epoch;
-	}
-
-	/**
 	 * @return the msg_type
 	 */
 	public String getMsg_type() {
@@ -85,18 +68,6 @@ public class DecayEpoch {
 	 */
 	public String getSource() {
 		return source;
-	}
-
-	/**
-	 * @return the decay_epoch
-	 */
-	public String getDecay_epoch() {
-		return decay_epoch;
-	}
-
-	public void setNorad_cat_id(String norad_cat_id_) {
-		this.norad_cat_id = norad_cat_id_;
-
 	}
 
 	@Override
@@ -119,20 +90,12 @@ public class DecayEpoch {
 
 	}
 
-	public void setMsg_epoch(String msg_epoch_) {
-		this.msg_epoch = msg_epoch_;
-	}
-
 	public void setMsg_type(String msg_type_) {
 		this.msg_type = msg_type_;
 	}
 
 	public void setSource(String source_) {
 		this.source = source_;
-	}
-
-	public void setDecay_epoch(String decay_epoch_) {
-		this.decay_epoch = decay_epoch_;
 	}
 
 	public String getCSVLine() {
@@ -142,12 +105,4 @@ public class DecayEpoch {
 		return result;
 	}
 
-	public boolean equals(DecayEpoch epoch) {
-		boolean result = false;
-		if (this.getNorad_cat_id().equals(epoch.getNorad_cat_id())
-				&& this.getMsg_epoch().equals(epoch.getMsg_epoch())) {
-			result = true;
-		}
-		return result;
-	}
 }

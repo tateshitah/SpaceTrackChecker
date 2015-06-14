@@ -6,5 +6,5 @@ cd /D %~dp0
 
 java -jar stchkr.jar
 
-pause
+rem pause
 exit

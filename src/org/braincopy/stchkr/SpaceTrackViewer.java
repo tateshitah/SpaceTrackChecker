@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -45,16 +46,19 @@ import java.util.ArrayList;
  */
 public class SpaceTrackViewer {
 
+	SpaceTrackWorker worker;
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SpaceTrackWorker worker = new SpaceTrackWorker();
 		SpaceTrackViewer viewer = new SpaceTrackViewer();
+		viewer.setWorker(new SpaceTrackWorker());
 
 		try {
-			ArrayList<DecayEpoch> decayEpochList = worker.getDecayEpochList();
-			ArrayList<TIP> tipList = worker.getTIPList();
+			ArrayList<DecayEpoch> decayEpochList = viewer.getWorker()
+					.getDecayEpochList();
+			ArrayList<TIP> tipList = viewer.getWorker().getTIPList();
 			viewer.createHTML(decayEpochList);
 			viewer.createHTML2(tipList);
 		} catch (Exception e1) {
@@ -78,6 +82,10 @@ public class SpaceTrackViewer {
 		}
 	}
 
+	private SpaceTrackWorker getWorker() {
+		return this.worker;
+	}
+
 	private void createHTML2(ArrayList<TIP> tipList)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = null;
@@ -89,8 +97,13 @@ public class SpaceTrackViewer {
 			throw e;
 		}
 		writer.print("<!DOCTYPE html><html><header>"
-				+ "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
-				+ "</header><body>");
+				// +
+				// "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
+				+ "<script type='text/javascript' src='http://www.openlayers.org/api/OpenLayers.js'></script>"
+				+ "<script type='text/javascript' src='js/openLayersImple.js'></script>"
+				+ "</header><body onload='init();'>");
+		writer.print("<div id='canvas' style='width:800px; height:600px'></div>");
+		writer.print("</body></html>");
 		writer.close();
 
 	}
@@ -105,21 +118,34 @@ public class SpaceTrackViewer {
 		} catch (UnsupportedEncodingException e) {
 			throw e;
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		sdf.setTimeZone(this.getWorker().getCurrent().getTimeZone());
+
 		writer.print("<!DOCTYPE html><html><header>"
 				+ "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
 				+ "</header><body>");
 		writer.print("<table class="
-				+ "'bordered'><thead><tr><th>Cat ID</th><th>Name</th>"
-				+ "<th>Country</th><th>MSG_EPOCH</th><th>DECAY_EPOCH</th></tr></thead><tbody>");
+				+ "'bordered'><caption>"
+				+ sdf.format(this.getWorker().getCurrent().getTime())
+				+ "("
+				+ sdf.getTimeZone().getID()
+				+ ") "
+				+ "</caption><thead><tr><th>Cat ID</th><th>Name</th>"
+				+ "<th>Country</th><th>MSG_EPOCH</th><th>DECAY_EPOCH</th><th>SOURCE</th></tr></thead><tbody>");
 		for (int i = 0; i < decayEpochList.size(); i++) {
 			writer.print("<tr><td>" + decayEpochList.get(i).getNorad_cat_id()
 					+ "</td><th>" + decayEpochList.get(i).getObject_name()
 					+ "</th><td>" + decayEpochList.get(i).getCountry()
 					+ "</td><td>" + decayEpochList.get(i).getMsg_epoch()
 					+ "</td><td>" + decayEpochList.get(i).getDecay_epoch()
+					+ "</td><td>" + decayEpochList.get(i).getSource()
 					+ "</td></tr>");
 		}
 		writer.print("</tbody></table></body></html>");
 		writer.close();
+	}
+
+	void setWorker(SpaceTrackWorker worker_) {
+		this.worker = worker_;
 	}
 }

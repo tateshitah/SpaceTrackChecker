@@ -524,4 +524,8 @@ public class SpaceTrackWorker {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public Calendar getCurrent() {
+		return this.current;
+	}
 }

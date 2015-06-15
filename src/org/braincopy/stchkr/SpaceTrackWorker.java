@@ -280,7 +280,7 @@ public class SpaceTrackWorker {
 			limit = spaceTrackProperties.getProperty("limit");
 			noradCatId = spaceTrackProperties.getProperty("NORAD_CAT_ID");
 		}
-		query = "/basicspacedata/query/class/tip/orderby/DECAY_EPOCH%20desc/";
+		query = "/basicspacedata/query/class/tip/orderby/MSG_EPOCH%20desc/";
 		if (noradCatId != null && !noradCatId.equals("")) {
 			query += "NORAD_CAT_ID/";
 			query += noradCatId + "/";
@@ -292,7 +292,7 @@ public class SpaceTrackWorker {
 		query += "format/xml/metadata/false";
 		return query;
 
-		// https://www.space-track.org/basicspacedata/query/class/tip/orderby/DECAY_EPOCH%20desc/limit/100/format/xml/metadata/false
+		// https://www.space-track.org/basicspacedata/query/class/tip/orderby/MSG_EPOCH%20desc/limit/100/format/xml/metadata/false
 	}
 
 	/**

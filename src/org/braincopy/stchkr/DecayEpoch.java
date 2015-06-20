@@ -25,22 +25,14 @@ package org.braincopy.stchkr;
 /**
  * 
  * @author Hiroaki Tateshita
- * @version 0.3.0
+ * @version 0.5.0
  * 
  */
 public class DecayEpoch extends SpaceTrackObject {
-	private String object_name;
 	private String rcs_size;
 	private String country;
 	private String msg_type;
 	private String source;
-
-	/**
-	 * @return the object_name
-	 */
-	public String getObject_name() {
-		return object_name;
-	}
 
 	/**
 	 * @return the rcs_size

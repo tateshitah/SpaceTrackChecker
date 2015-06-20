@@ -42,7 +42,7 @@ import java.util.ArrayList;
  * Train - Drive By
  * 
  * @author Hiroaki Tateshita
- * @version 0.4.0
+ * @version 0.5.0
  *
  */
 public class SpaceTrackViewer {
@@ -61,8 +61,9 @@ public class SpaceTrackViewer {
 					.getDecayEpochList();
 			ArrayList<SpaceTrackObject> tipList = viewer.getWorker()
 					.getTIPList();
+			viewer.addTIPInfoToDecayEpochList(decayEpochList, tipList);
 			viewer.createHTML(decayEpochList);
-			viewer.createHTML2(tipList);
+			viewer.createHTML2(decayEpochList);
 		} catch (Exception e1) {
 			System.err.println("" + e1.getLocalizedMessage());
 			e1.printStackTrace();
@@ -87,6 +88,27 @@ public class SpaceTrackViewer {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void addTIPInfoToDecayEpochList(
+			ArrayList<SpaceTrackObject> decayEpochList,
+			ArrayList<SpaceTrackObject> tipList) {
+		SpaceTrackObject decayEpoch = null;
+		SpaceTrackObject tip = null;
+		for (int i = 0; i < decayEpochList.size(); i++) {
+			decayEpoch = decayEpochList.get(i);
+			for (int j = 0; j < tipList.size(); j++) {
+				tip = tipList.get(j);
+				if (decayEpoch.getNorad_cat_id().equals(tip.getNorad_cat_id())) {
+					decayEpoch.setLat(tip.getLat());
+					decayEpoch.setLon(tip.getLon());
+					break;
+				}
+			}
+			// decayEpochList.set(i, decayEpoch);
+		}
+		// System.out.println("");
+
 	}
 
 	private SpaceTrackWorker getWorker() {
@@ -114,16 +136,20 @@ public class SpaceTrackViewer {
 				// "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
 				+ "<script type='text/javascript' src='http://www.openlayers.org/api/OpenLayers.js'></script>"
 				+ "<script type='text/javascript' src='js/openLayersImple.js'>"
-				+ "</script>" + "</header><body onload='init();");
-		TIP tip = null;
-		for (int i = 0; i < tipList.size(); i++) {
-			tip = (TIP) tipList.get(i);
-			writer.print("showMarker(" + tip.getLon() + "," + tip.getLat()
-					+ ");");
-		}
-		writer.print("'>");
+				+ "</script>" + "</header><body>");
 		writer.print("<div id='canvas' style='width:800px; height:600px'></div>");
-		writer.print("</body></html>");
+		writer.print("<script type='text/javascript'>init();");
+		SpaceTrackObject tip = null;
+		for (int i = 0; i < tipList.size(); i++) {
+			tip = tipList.get(i);
+			if (tip.getLat() != null) {
+				writer.print("showMarker(" + tip.getLon() + "," + tip.getLat()
+						+ "," + tip.getNorad_cat_id() + ",'"
+						+ tip.getObject_name() + "','" + tip.getDecay_epoch()
+						+ "');");
+			}
+		}
+		writer.print("</script></body></html>");
 		writer.close();
 
 	}

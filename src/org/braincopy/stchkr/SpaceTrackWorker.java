@@ -54,10 +54,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Main class of Space Track Checker application.
+ * Main class of Space Track Checker command line application.
  * 
  * @author Hiroaki Tateshita
- * @version 0.4.0
+ * @version 0.5.0
  * 
  */
 public class SpaceTrackWorker {
@@ -421,7 +421,7 @@ public class SpaceTrackWorker {
 			for (int i = 0; i < decayEpochNodeList.getLength(); i++) {
 				// System.out.println(i + ": "
 				// + decayEpochNodeList.item(i).getNodeName());
-				TIP tip = new TIP();
+				SpaceTrackObject tip = new SpaceTrackObject();
 				membersOfItem = decayEpochNodeList.item(i).getChildNodes();
 				Node tempNode;
 
@@ -440,6 +440,10 @@ public class SpaceTrackWorker {
 						if (tempNode != null) {
 							tip.setLon(tempNode.getNodeValue());
 						}
+					} else if (membersOfItem.item(j).getNodeName()
+							.equals("MSG_EPOCH")) {
+						tip.setMsg_epoch(membersOfItem.item(j).getFirstChild()
+								.getNodeValue());
 					} else if (membersOfItem.item(j).getNodeName()
 							.equals("DECAY_EPOCH")) {
 						tip.setDecay_epoch(membersOfItem.item(j)

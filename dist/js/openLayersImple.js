@@ -35,7 +35,7 @@ function showMarker(lon, lat, id, name, date) {
 		popup = new OpenLayers.Popup.FramedCloud("Popup",
 				new OpenLayers.LonLat(lon, lat).transform(fromProjection,
 						toProjection), null, "<p>" + id + "</p><p>" + name
-						+ "</p><p>" + date + "</p>", null, true);
+						+ "</p><p>" + date + "</p>", null, false);
 		map.addPopup(popup);
 	});
 	// here add mouseout event

@@ -134,11 +134,12 @@ public class SpaceTrackViewer {
 		writer.print("<!DOCTYPE html><html><header>"
 				// +
 				// "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
+				+ "<style type='text/css'><!--p {font-size: 1px;}--></style>"
 				+ "<script type='text/javascript' src='http://www.openlayers.org/api/OpenLayers.js'></script>"
 				+ "<script type='text/javascript' src='js/openLayersImple.js'></script>"
 				+ "<script src='http://www.openstreetmap.org/openlayers/OpenStreetMap.js'></script>"
 				+ "</header><body>");
-		writer.print("<div id='canvas' style='width:800px; height:600px'></div>");
+		writer.print("<div id='canvas' style='width:1000px; height:600px'></div>");
 		writer.print("<script type='text/javascript'>init();");
 		DecayEpochObject tip = null;
 		for (int i = 0; i < tipList.size(); i++) {

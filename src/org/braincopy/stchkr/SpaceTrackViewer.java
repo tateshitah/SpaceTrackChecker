@@ -42,7 +42,7 @@ import java.util.ArrayList;
  * Train - Drive By
  * 
  * @author Hiroaki Tateshita
- * @version 0.5.0
+ * @version 0.5.5
  *
  */
 public class SpaceTrackViewer {
@@ -57,9 +57,9 @@ public class SpaceTrackViewer {
 		viewer.setWorker(new SpaceTrackWorker());
 
 		try {
-			ArrayList<SpaceTrackObject> decayEpochList = viewer.getWorker()
+			ArrayList<DecayEpochObject> decayEpochList = viewer.getWorker()
 					.getDecayEpochList();
-			ArrayList<SpaceTrackObject> tipList = viewer.getWorker()
+			ArrayList<DecayEpochObject> tipList = viewer.getWorker()
 					.getTIPList();
 			viewer.addTIPInfoToDecayEpochList(decayEpochList, tipList);
 			viewer.createHTML(decayEpochList);
@@ -91,10 +91,10 @@ public class SpaceTrackViewer {
 	}
 
 	private void addTIPInfoToDecayEpochList(
-			ArrayList<SpaceTrackObject> decayEpochList,
-			ArrayList<SpaceTrackObject> tipList) {
-		SpaceTrackObject decayEpoch = null;
-		SpaceTrackObject tip = null;
+			ArrayList<DecayEpochObject> decayEpochList,
+			ArrayList<DecayEpochObject> tipList) {
+		DecayEpochObject decayEpoch = null;
+		DecayEpochObject tip = null;
 		for (int i = 0; i < decayEpochList.size(); i++) {
 			decayEpoch = decayEpochList.get(i);
 			for (int j = 0; j < tipList.size(); j++) {
@@ -121,7 +121,7 @@ public class SpaceTrackViewer {
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	private void createHTML2(ArrayList<SpaceTrackObject> tipList)
+	private void createHTML2(ArrayList<DecayEpochObject> tipList)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = null;
 		try {
@@ -135,11 +135,12 @@ public class SpaceTrackViewer {
 				// +
 				// "<link rel='stylesheet' href='css/style_1.css' type='text/css'>"
 				+ "<script type='text/javascript' src='http://www.openlayers.org/api/OpenLayers.js'></script>"
-				+ "<script type='text/javascript' src='js/openLayersImple.js'>"
-				+ "</script>" + "</header><body>");
+				+ "<script type='text/javascript' src='js/openLayersImple.js'></script>"
+				+ "<script src='http://www.openstreetmap.org/openlayers/OpenStreetMap.js'></script>"
+				+ "</header><body>");
 		writer.print("<div id='canvas' style='width:800px; height:600px'></div>");
 		writer.print("<script type='text/javascript'>init();");
-		SpaceTrackObject tip = null;
+		DecayEpochObject tip = null;
 		for (int i = 0; i < tipList.size(); i++) {
 			tip = tipList.get(i);
 			if (tip.getLat() != null) {
@@ -160,7 +161,7 @@ public class SpaceTrackViewer {
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	private void createHTML(ArrayList<SpaceTrackObject> decayEpochList)
+	private void createHTML(ArrayList<DecayEpochObject> decayEpochList)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = null;
 		try {
@@ -184,9 +185,9 @@ public class SpaceTrackViewer {
 				+ ") "
 				+ "</caption><thead><tr><th>Cat ID</th><th>Name</th>"
 				+ "<th>Country</th><th>MSG_EPOCH</th><th>DECAY_EPOCH</th><th>SOURCE</th></tr></thead><tbody>");
-		DecayEpoch decayEpoch = null;
+		DecayEpochObject decayEpoch = null;
 		for (int i = 0; i < decayEpochList.size(); i++) {
-			decayEpoch = (DecayEpoch) decayEpochList.get(i);
+			decayEpoch = decayEpochList.get(i);
 			writer.print("<tr><td>" + decayEpoch.getNorad_cat_id()
 					+ "</td><th>" + decayEpoch.getObject_name() + "</th><td>"
 					+ decayEpoch.getCountry() + "</td><td>"

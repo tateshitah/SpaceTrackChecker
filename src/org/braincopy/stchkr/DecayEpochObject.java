@@ -25,10 +25,84 @@ package org.braincopy.stchkr;
 /**
  * 
  * @author Hiroaki Tateshita
- * @version 0.5.0
- * 
+ * @version 0.5.5
+ *
  */
-public class DecayEpoch extends SpaceTrackObject {
+public class DecayEpochObject {
+	protected String norad_cat_id;
+	protected String msg_epoch;
+	protected String decay_epoch;
+	protected String object_name;
+	protected String lat;
+	protected String lon;
+
+	/**
+	 * @return the norad_cat_id
+	 */
+	public String getNorad_cat_id() {
+		return norad_cat_id;
+	}
+
+	public void setNorad_cat_id(String norad_cat_id_) {
+		this.norad_cat_id = norad_cat_id_;
+
+	}
+
+	/**
+	 * @return the object_name
+	 */
+	public String getObject_name() {
+		return object_name;
+	}
+
+	public void setDecay_epoch(String decay_epoch_) {
+		this.decay_epoch = decay_epoch_;
+	}
+
+	/**
+	 * @return the decay_epoch
+	 */
+	public String getDecay_epoch() {
+		return decay_epoch;
+	}
+
+	/**
+	 * @return the msg_epoch
+	 */
+	public String getMsg_epoch() {
+		return msg_epoch;
+	}
+
+	public void setMsg_epoch(String msg_epoch_) {
+		this.msg_epoch = msg_epoch_;
+	}
+
+	public void setLat(String lat_) {
+		this.lat = lat_;
+	}
+
+	public void setLon(String lon_) {
+		this.lon = lon_;
+
+	}
+
+	public String getLat() {
+		return this.lat;
+	}
+
+	public String getLon() {
+		return this.lon;
+	}
+
+	public boolean equals(DecayEpochObject epoch) {
+		boolean result = false;
+		if (this.getNorad_cat_id().equals(epoch.getNorad_cat_id())
+				&& this.getMsg_epoch().equals(epoch.getMsg_epoch())) {
+			result = true;
+		}
+		return result;
+	}
+
 	private String rcs_size;
 	private String country;
 	private String msg_type;
@@ -96,5 +170,4 @@ public class DecayEpoch extends SpaceTrackObject {
 				+ "," + getRcs_size() + "," + getSource() + "," + getMsg_type();
 		return result;
 	}
-
 }

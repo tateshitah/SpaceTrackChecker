@@ -57,7 +57,7 @@ import org.xml.sax.SAXException;
  * Main class of Space Track Checker command line application.
  * 
  * @author Hiroaki Tateshita
- * @version 0.5.0
+ * @version 0.5.5
  * 
  */
 public class SpaceTrackWorker {
@@ -118,7 +118,7 @@ public class SpaceTrackWorker {
 	/**
 	 * ArrayList of DecayEpoch objects from the latest log file
 	 */
-	private ArrayList<DecayEpoch> lastEpochArray;
+	private ArrayList<DecayEpochObject> lastEpochArray;
 
 	// private int limit;
 
@@ -133,7 +133,7 @@ public class SpaceTrackWorker {
 		try {
 			SpaceTrackWorker worker = new SpaceTrackWorker();
 
-			ArrayList<SpaceTrackObject> decayEpochList = worker
+			ArrayList<DecayEpochObject> decayEpochList = worker
 					.getDecayEpochList();
 
 			worker.outputDecayData(decayEpochList);
@@ -155,8 +155,8 @@ public class SpaceTrackWorker {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<SpaceTrackObject> getDecayEpochList() throws Exception {
-		ArrayList<SpaceTrackObject> result = null;
+	public ArrayList<DecayEpochObject> getDecayEpochList() throws Exception {
+		ArrayList<DecayEpochObject> result = null;
 
 		loadPropertiesFiles();
 
@@ -193,8 +193,8 @@ public class SpaceTrackWorker {
 		return result;
 	}
 
-	public ArrayList<SpaceTrackObject> getTIPList() throws Exception {
-		ArrayList<SpaceTrackObject> result = null;
+	public ArrayList<DecayEpochObject> getTIPList() throws Exception {
+		ArrayList<DecayEpochObject> result = null;
 
 		loadPropertiesFiles();
 
@@ -338,11 +338,11 @@ public class SpaceTrackWorker {
 	 * @return delay epoch array list
 	 * @throws SpaceTrackNoResultException
 	 */
-	private ArrayList<SpaceTrackObject> createDecayEpochArray(Document doc)
+	private ArrayList<DecayEpochObject> createDecayEpochArray(Document doc)
 			throws SpaceTrackNoResultException {
 		NodeList decayEpochNodeList = doc.getElementsByTagName("item");
 		NodeList membersOfItem;
-		ArrayList<SpaceTrackObject> result = new ArrayList<SpaceTrackObject>();
+		ArrayList<DecayEpochObject> result = new ArrayList<DecayEpochObject>();
 		if (decayEpochNodeList.getLength() > 0) {
 			boolean isNoradCatIDSet = false;
 			if (!spaceTrackProperties.getProperty("NORAD_CAT_ID").equals("")) {
@@ -351,7 +351,7 @@ public class SpaceTrackWorker {
 			for (int i = 0; i < decayEpochNodeList.getLength(); i++) {
 				// System.out.println(i + ": "
 				// + decayEpochNodeList.item(i).getNodeName());
-				DecayEpoch decayEpoch = new DecayEpoch();
+				DecayEpochObject decayEpoch = new DecayEpochObject();
 				membersOfItem = decayEpochNodeList.item(i).getChildNodes();
 				Node tempNode;
 
@@ -412,16 +412,16 @@ public class SpaceTrackWorker {
 	 * @return should be TIP object
 	 * @throws SpaceTrackNoResultException
 	 */
-	private ArrayList<SpaceTrackObject> createTIPArray(Document doc)
+	private ArrayList<DecayEpochObject> createTIPArray(Document doc)
 			throws SpaceTrackNoResultException {
 		NodeList decayEpochNodeList = doc.getElementsByTagName("item");
 		NodeList membersOfItem;
-		ArrayList<SpaceTrackObject> result = new ArrayList<SpaceTrackObject>();
+		ArrayList<DecayEpochObject> result = new ArrayList<DecayEpochObject>();
 		if (decayEpochNodeList.getLength() > 0) {
 			for (int i = 0; i < decayEpochNodeList.getLength(); i++) {
 				// System.out.println(i + ": "
 				// + decayEpochNodeList.item(i).getNodeName());
-				SpaceTrackObject tip = new SpaceTrackObject();
+				DecayEpochObject tip = new DecayEpochObject();
 				membersOfItem = decayEpochNodeList.item(i).getChildNodes();
 				Node tempNode;
 
@@ -472,8 +472,8 @@ public class SpaceTrackWorker {
 	 *         true, if not return false.
 	 */
 	private boolean checkIncludeSameNoradCatID(
-			ArrayList<SpaceTrackObject> decayEpochList,
-			SpaceTrackObject decayEpoch) {
+			ArrayList<DecayEpochObject> decayEpochList,
+			DecayEpochObject decayEpoch) {
 		boolean result = false;
 		for (int i = 0; i < decayEpochList.size(); i++) {
 			if (decayEpochList.get(i).getNorad_cat_id()
@@ -490,7 +490,7 @@ public class SpaceTrackWorker {
 	 * 
 	 * @param decayEpochList
 	 */
-	private void outputDecayData(ArrayList<SpaceTrackObject> decayEpochList) {
+	private void outputDecayData(ArrayList<DecayEpochObject> decayEpochList) {
 		String result = "";
 		if (this.showLine > decayEpochList.size()) {
 			this.showLine = decayEpochList.size();
@@ -513,8 +513,7 @@ public class SpaceTrackWorker {
 				if (!checkExist(decayEpochList.get(i))) {
 					result += "+";
 				}
-				result += ((DecayEpoch) decayEpochList.get(i)).getCSVLine()
-						+ BR;
+				result += (decayEpochList.get(i)).getCSVLine() + BR;
 			}
 			System.out.print(result);
 		}
@@ -527,7 +526,7 @@ public class SpaceTrackWorker {
 	 * @param spaceTrackObject
 	 * @return
 	 */
-	private boolean checkExist(SpaceTrackObject spaceTrackObject) {
+	private boolean checkExist(DecayEpochObject spaceTrackObject) {
 		boolean result = false;
 		if (this.lastEpochArray != null) {
 			for (int i = 0; i < this.lastEpochArray.size(); i++) {
@@ -567,10 +566,10 @@ public class SpaceTrackWorker {
 						this.last.setTime(sdf.parse(reader.readLine()));
 						String tempStr;
 						String[] tempStrArray;
-						this.lastEpochArray = new ArrayList<DecayEpoch>();
+						this.lastEpochArray = new ArrayList<DecayEpochObject>();
 						while ((tempStr = reader.readLine()) != null) {
 							tempStrArray = tempStr.split(",");
-							DecayEpoch epoch = new DecayEpoch();
+							DecayEpochObject epoch = new DecayEpochObject();
 							epoch.setNorad_cat_id(tempStrArray[0]);
 							epoch.setObject_name(tempStrArray[1]);
 							epoch.setCountry(tempStrArray[2]);
@@ -617,7 +616,7 @@ public class SpaceTrackWorker {
 	 * @throws IOException
 	 *             file i/o problem to write log file.
 	 */
-	private void saveDecayData(ArrayList<SpaceTrackObject> decayEpochList)
+	private void saveDecayData(ArrayList<DecayEpochObject> decayEpochList)
 			throws IOException {
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat sdf_filename = new SimpleDateFormat("yyyyMMddHHmmss",
@@ -630,9 +629,9 @@ public class SpaceTrackWorker {
 		try {
 			writer = new FileWriter(fileName);
 			writer.write(sdf.format(calendar.getTime()) + BR);
-			DecayEpoch epoch;
+			DecayEpochObject epoch;
 			for (int i = 0; i < decayEpochList.size(); i++) {
-				epoch = (DecayEpoch) decayEpochList.get(i);
+				epoch = decayEpochList.get(i);
 				writer.write(epoch.getCSVLine() + BR);
 			}
 			if (spaceTrackProperties != null) {
